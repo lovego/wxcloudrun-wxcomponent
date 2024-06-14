@@ -18,6 +18,16 @@ func main() {
 
 	var g errgroup.Group
 
+	// 转发服务
+	g.Go(func() error {
+		r := routers.ForwardInit()
+		if err := r.Run("127.0.0.1:8082"); err != nil {
+			log.Error("startup forward service failed, err:%v", err)
+			return err
+		}
+		return nil
+	})
+
 	// 内部服务
 	g.Go(func() error {
 		r := routers.InnerServiceInit()
