@@ -17,7 +17,7 @@ func GetCurrent(key string) (uint, error) {
 	var err error
 	var counter model.Counter
 	cli := db.Get()
-	if err = cli.Table(counterTableName).Where("`key` = ?", key).Take(&counter).Error; err != nil {
+	if err = cli.Table(counterTableName).Where("key = ?", key).Take(&counter).Error; err != nil {
 		log.Error(err)
 		if err == gorm.ErrRecordNotFound {
 			return 0, nil
@@ -32,7 +32,7 @@ func AddOne(key string, limit uint) error {
 	var err error
 	var counter model.Counter
 	cli := db.Get()
-	if err = cli.Table(counterTableName).Where("`key` = ?", key).Take(&counter).Error; err != nil {
+	if err = cli.Table(counterTableName).Where("key = ?", key).Take(&counter).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			counter.Key = key
 			counter.Value = 1
@@ -45,7 +45,7 @@ func AddOne(key string, limit uint) error {
 			return err
 		}
 	}
-	result := cli.Table(counterTableName).Where("`key` = ? and value < ? ", key, limit).
+	result := cli.Table(counterTableName).Where("key = ? and value < ? ", key, limit).
 		UpdateColumn("value", gorm.Expr("value + ?", 1))
 	if err := result.Error; err != nil {
 		log.Error(err)

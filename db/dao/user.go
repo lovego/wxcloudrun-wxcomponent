@@ -55,34 +55,30 @@ func GetUserRecord(username string, password string) ([]*model.UserRecord, error
 func UpdateUserRecord(id int32, username string, password string, oldPassword string) error {
 	log.Debugf("user[%s] pwd[%s] oldpwd[%s]", username, password, oldPassword)
 	cli := db.Get()
-	result := cli.Table(userTableName).Where("id = ?", id)
 	if oldPassword != "" {
 		md5OldPwd := encrypt.GenerateMd5(oldPassword)
 		var records []*model.UserRecord
-		result = result.Where("password = ?", md5OldPwd).First(&records)
+		cli.Table(userTableName).Where("id = ?", id).Where("password = ?", md5OldPwd).First(&records)
 		if len(records) == 0 {
 			return errors.New("password error")
 		}
 	}
+	updates := map[string]interface{}{}
 	if username != "" {
-		if err := result.Update("username", username).Error; err != nil {
-			log.Error("update username err ", err.Error())
-			return err
-		}
+		updates["username"] = username
 	}
 	if password != "" {
 		if oldPassword == "" {
 			return errors.New("empty old password")
 		}
-		md5Pwd := encrypt.GenerateMd5(password)
-		if err := result.Update("password", md5Pwd).Error; err != nil {
-			log.Error("update password err ", err.Error())
+		updates["password"] = encrypt.GenerateMd5(password)
+	}
+	if len(updates) > 0 {
+		updates["updatetime"] = time.Now()
+		if err := cli.Table(userTableName).Where("id = ?", id).Updates(updates).Error; err != nil {
+			log.Error("Update error: ", err)
 			return err
 		}
-	}
-	if err := result.Update("updatetime", time.Now()).Error; err != nil {
-		log.Error("update updatetime err ", err.Error())
-		return err
 	}
 	return nil
 }

@@ -52,7 +52,7 @@ func SetCommKv(key string, value string) error {
 	err = cli.Table(commTableName).Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "key"}},
 		DoUpdates: clause.AssignmentColumns([]string{"value"}),
-	}).Create(kv).Error
+	}).Create(&kv).Error
 	if err != nil {
 		log.Error(err.Error())
 		return err
@@ -69,7 +69,7 @@ func AddCommKv(key string, value string) error {
 	}
 
 	cli := db.Get()
-	if err := cli.Table(commTableName).Create(kv).Error; err != nil {
+	if err := cli.Table(commTableName).Create(&kv).Error; err != nil {
 		log.Error(err.Error())
 		return err
 	}
@@ -80,7 +80,7 @@ func AddCommKv(key string, value string) error {
 func DelCommKv(key string) error {
 	log.Infof("DelCommKv: %s", key)
 	cli := db.Get()
-	if err := cli.Table(commTableName).Where("`key` = ?", key).
+	if err := cli.Table(commTableName).Where("key = ?", key).
 		Delete(&model.CommKv{}).Error; err != nil {
 		log.Error(err.Error())
 		return err
@@ -93,7 +93,7 @@ func DelExpiredCommKv(key string, d time.Duration) (int64, error) {
 	log.Infof("DelExpiredCommKv: %s", key)
 	cli := db.Get()
 	result := cli.Table(commTableName).
-		Where("`key` = ? and UpdateTime < ?", key,
+		Where("key = ? and UpdateTime < ?", key,
 			time.Now().Add(-d)).Delete(&model.CommKv{})
 	if result.Error != nil {
 		log.Error(result.Error)
@@ -107,7 +107,7 @@ func GetCommKv(key string, defaultValue string) string {
 	var err error
 	var kv model.CommKv
 	cli := db.Get()
-	if err = cli.Table(commTableName).Where("`key` = ?", key).Take(&kv).Error; err != nil {
+	if err = cli.Table(commTableName).Where("key = ?", key).Take(&kv).Error; err != nil {
 		log.Error(err.Error())
 		return defaultValue
 	}
