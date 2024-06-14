@@ -10,6 +10,7 @@ import (
 	"github.com/WeixinCloud/wxcloudrun-wxcomponent/api/innerservice"
 	"github.com/WeixinCloud/wxcloudrun-wxcomponent/api/proxy"
 	"github.com/WeixinCloud/wxcloudrun-wxcomponent/api/wxcallback"
+	"github.com/WeixinCloud/wxcloudrun-wxcomponent/comm/config"
 	"github.com/WeixinCloud/wxcloudrun-wxcomponent/middleware"
 	"github.com/gin-gonic/gin"
 )
@@ -58,7 +59,7 @@ func InnerServiceInit() *gin.Engine {
 
 func ForwardInit() *gin.Engine {
 	r := gin.Default()
-	target := "http://localhost:8083" // TODO
+	target := config.ForwardConf.Url
 	proxyUrl, _ := url.Parse(target)
 
 	r.Any("/*proxyPath", func(c *gin.Context) {

@@ -15,8 +15,13 @@ type Whitelist struct {
 	Ip []string
 }
 
+type Forward struct {
+	Url string
+}
+
 var OplatformConf = &Oplatform{}
 var WhitelistConf = &Whitelist{}
+var ForwardConf = &Forward{}
 
 func init() {
 	var err error
@@ -27,5 +32,6 @@ func init() {
 	}
 	mapTo("oplatform", OplatformConf)
 	mapTo("whitelist", WhitelistConf)
+	mapTo("forward", ForwardConf)
 	log.Debug("load server oplatform conf")
 }
