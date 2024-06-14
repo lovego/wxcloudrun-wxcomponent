@@ -18,9 +18,9 @@ func GetWxCallBackRuleList(offset int, limit int, callbackType int) ([]*model.Wx
 	cli := db.Get()
 	result := cli.Table(callbackRuleTableName)
 	if callbackType == model.CALLBACKTYPE_COM {
-		result = result.Where("infotype != \"\"")
+		result = result.Where("infotype != ''")
 	} else if callbackType == model.CALLBACKTYPE_BIZ {
-		result = result.Where("infotype = \"\"")
+		result = result.Where("infotype = ''")
 	}
 	var count int64
 	result = result.Count(&count).Offset(offset).Limit(limit).Find(&records)

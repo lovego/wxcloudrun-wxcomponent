@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/WeixinCloud/wxcloudrun-wxcomponent/api/wxcallback/custom"
 	"github.com/WeixinCloud/wxcloudrun-wxcomponent/comm/errno"
 	"github.com/WeixinCloud/wxcloudrun-wxcomponent/comm/log"
 	"github.com/WeixinCloud/wxcloudrun-wxcomponent/comm/wx"
@@ -22,6 +23,11 @@ type wxCallbackComponentRecord struct {
 }
 
 func componentHandler(c *gin.Context) {
+	parse, err := custom.Parse(c, &custom.WxCallbackComponentMsg{})
+	if err != nil {
+		c.JSON(http.StatusOK, errno.ErrInvalidParam.WithData(err.Error()))
+		return
+	}
 	// 记录到数据库
 	body, _ := ioutil.ReadAll(c.Request.Body)
 	var json wxCallbackComponentRecord
@@ -44,7 +50,6 @@ func componentHandler(c *gin.Context) {
 	}
 
 	// 处理授权相关的消息
-	var err error
 	switch json.InfoType {
 	case "component_verify_ticket":
 		err = ticketHandler(&body)
@@ -63,7 +68,7 @@ func componentHandler(c *gin.Context) {
 
 	// 转发到用户配置的地址
 	var proxyOpen bool
-	proxyOpen, err = proxyCallbackMsg(json.InfoType, "", "", string(body), c)
+	proxyOpen, err = proxyCallbackMsg(json.InfoType, "", "", string(parse), c)
 	if err != nil {
 		log.Error(err)
 		c.JSON(http.StatusOK, errno.ErrSystemError.WithData(err.Error()))

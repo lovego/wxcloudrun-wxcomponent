@@ -1,13 +1,16 @@
 package routers
 
 import (
+	"io"
 	"net/http"
+	"net/url"
 
 	"github.com/WeixinCloud/wxcloudrun-wxcomponent/api/admin"
 	"github.com/WeixinCloud/wxcloudrun-wxcomponent/api/authpage"
 	"github.com/WeixinCloud/wxcloudrun-wxcomponent/api/innerservice"
 	"github.com/WeixinCloud/wxcloudrun-wxcomponent/api/proxy"
 	"github.com/WeixinCloud/wxcloudrun-wxcomponent/api/wxcallback"
+	"github.com/WeixinCloud/wxcloudrun-wxcomponent/comm/config"
 	"github.com/WeixinCloud/wxcloudrun-wxcomponent/middleware"
 	"github.com/gin-gonic/gin"
 )
@@ -51,5 +54,47 @@ func InnerServiceInit() *gin.Engine {
 	r := gin.Default()
 	r.Use(middleware.LogMiddleWare)
 	innerservice.Routers(r)
+	return r
+}
+
+func ForwardInit() *gin.Engine {
+	r := gin.Default()
+	target := config.ForwardConf.Url
+	proxyUrl, _ := url.Parse(target)
+
+	r.Any("/*proxyPath", func(c *gin.Context) {
+		proxyPath := c.Param("proxyPath")
+		proxyUrl.Path += proxyPath
+		proxyQuery := c.Request.URL.RawQuery
+		if proxyQuery != "" {
+			proxyUrl.RawQuery = proxyQuery
+		}
+		proxyReq, err := http.NewRequest(c.Request.Method, proxyUrl.String(), c.Request.Body)
+		if err != nil {
+			c.String(http.StatusInternalServerError, "创建请求失败")
+			return
+		}
+		for k, v := range c.Request.Header {
+			for _, vv := range v {
+				proxyReq.Header.Add(k, vv)
+			}
+		}
+
+		client := &http.Client{}
+		resp, err := client.Do(proxyReq)
+		if err != nil {
+			c.String(http.StatusInternalServerError, "请求失败")
+			return
+		}
+		defer resp.Body.Close()
+
+		for k, v := range resp.Header {
+			for _, vv := range v {
+				c.Writer.Header().Add(k, vv)
+			}
+		}
+		c.Writer.WriteHeader(resp.StatusCode)
+		io.Copy(c.Writer, resp.Body)
+	})
 	return r
 }
