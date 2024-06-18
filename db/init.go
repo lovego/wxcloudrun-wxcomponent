@@ -2,9 +2,9 @@ package db
 
 import (
 	"fmt"
-	"os"
 	"time"
 
+	"github.com/WeixinCloud/wxcloudrun-wxcomponent/comm/config"
 	"github.com/patrickmn/go-cache"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -20,10 +20,10 @@ var cacheInstance *cache.Cache
 // Init 初始化数据库
 func Init() error {
 	var user, pwd, addr, dataBase string
-	user = os.Getenv("POSTGRESQL_USERNAME")
-	pwd = os.Getenv("POSTGRESQL_PASSWORD")
-	addr = os.Getenv("POSTGRESQL_ADDRESS")
-	dataBase = os.Getenv("POSTGRESQL_DATABASE")
+	user = config.DBConf.Username
+	pwd = config.DBConf.Password
+	addr = config.DBConf.Address
+	dataBase = config.DBConf.Database
 	if dataBase == "" {
 		dataBase = "wxcomponent"
 	}

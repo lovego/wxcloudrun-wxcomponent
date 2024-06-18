@@ -19,9 +19,19 @@ type Forward struct {
 	Url string
 }
 
+type DB struct {
+	Username string
+	Password string
+	Address  string
+	Database string
+	Admin    string
+	Pass     string
+}
+
 var OplatformConf = &Oplatform{}
 var WhitelistConf = &Whitelist{}
 var ForwardConf = &Forward{}
+var DBConf = &DB{}
 
 func init() {
 	var err error
@@ -33,5 +43,6 @@ func init() {
 	mapTo("oplatform", OplatformConf)
 	mapTo("whitelist", WhitelistConf)
 	mapTo("forward", ForwardConf)
+	mapTo("db", DBConf)
 	log.Debug("load server oplatform conf")
 }
