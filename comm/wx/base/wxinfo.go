@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/WeixinCloud/wxcloudrun-wxcomponent/comm/config"
 	"github.com/WeixinCloud/wxcloudrun-wxcomponent/comm/log"
 	"github.com/WeixinCloud/wxcloudrun-wxcomponent/db/dao"
 )
@@ -16,7 +17,7 @@ var service string
 func init() {
 	envid = os.Getenv("CBR_ENV_ID")
 	host := os.Getenv("HOSTNAME")
-	appid = os.Getenv("WX_APPID")
+	appid = config.OplatformConf.Appid
 	if len(appid) == 0 {
 		if i := strings.Index(envid, "-"); i != -1 {
 			appid = envid[:i]

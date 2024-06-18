@@ -6,9 +6,11 @@ import (
 )
 
 type Oplatform struct {
-	Appid  string
-	Token  string
-	AesKey string
+	Appid    string
+	Token    string
+	AesKey   string
+	Username string
+	Password string
 }
 
 type Whitelist struct {
@@ -19,9 +21,17 @@ type Forward struct {
 	Url string
 }
 
+type DB struct {
+	Username string
+	Password string
+	Address  string
+	Database string
+}
+
 var OplatformConf = &Oplatform{}
 var WhitelistConf = &Whitelist{}
 var ForwardConf = &Forward{}
+var DBConf = &DB{}
 
 func init() {
 	var err error
@@ -33,5 +43,6 @@ func init() {
 	mapTo("oplatform", OplatformConf)
 	mapTo("whitelist", WhitelistConf)
 	mapTo("forward", ForwardConf)
+	mapTo("db", DBConf)
 	log.Debug("load server oplatform conf")
 }

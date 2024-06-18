@@ -1,8 +1,7 @@
 package admin
 
 import (
-	"os"
-
+	"github.com/WeixinCloud/wxcloudrun-wxcomponent/comm/config"
 	"github.com/WeixinCloud/wxcloudrun-wxcomponent/comm/encrypt"
 
 	"github.com/WeixinCloud/wxcloudrun-wxcomponent/comm/log"
@@ -20,8 +19,8 @@ func InitAdmin(username, password string) error {
 
 // Init 初始化管理员
 func Init() error {
-	username := os.Getenv("MYSQL_USERNAME")
-	password := os.Getenv("MYSQL_PASSWORD")
+	username := config.OplatformConf.Username
+	password := config.OplatformConf.Password
 	log.Debugf("GetUser user[%s] pwd[%s]", username, password)
 	// conv password like website
 	md5Pwd := encrypt.GenerateMd5(password)
