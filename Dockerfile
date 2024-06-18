@@ -7,7 +7,7 @@ COPY . /wxcloudrun-wxcomponent/
 
 RUN npm config set strict-ssl false && cd /wxcloudrun-wxcomponent/client && npm install --registry=https://registry.npm.taobao.org && npm run build
 
-FROM golang:1.17.1-alpine3.14 as builder
+FROM golang:1.22.4-alpine3.20 as builder
 
 # 指定构建过程中的工作目录
 WORKDIR /wxcloudrun-wxcomponent
