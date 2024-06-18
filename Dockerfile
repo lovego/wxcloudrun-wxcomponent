@@ -5,7 +5,7 @@ WORKDIR /wxcloudrun-wxcomponent
 # 将当前目录（dockerfile所在目录）下所有文件都拷贝到工作目录下
 COPY . /wxcloudrun-wxcomponent/
 
-RUN cd /wxcloudrun-wxcomponent/client && npm install --registry=https://registry.npm.taobao.org && npm run build
+RUN npm config set strict-ssl false && cd /wxcloudrun-wxcomponent/client && npm install --registry=https://registry.npm.taobao.org && npm run build
 
 FROM golang:1.17.1-alpine3.14 as builder
 
@@ -16,7 +16,7 @@ WORKDIR /wxcloudrun-wxcomponent
 COPY . /wxcloudrun-wxcomponent/
 
 # 执行代码编译命令。操作系统参数为linux，编译后的二进制产物命名为main，并存放在当前目录下。
-RUN GOPROXY="https://goproxy.cn" GO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o main .
+RUN GOPROXY="https://goproxy.cn" GO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -x -v -o main .
 
 # 选用运行时所用基础镜像（GO语言选择原则：尽量体积小、包含基础linux内容的基础镜像）
 FROM alpine:3.13
@@ -27,6 +27,7 @@ WORKDIR /wxcloudrun-wxcomponent
 # 将构建产物/wxcloudrun-wxcomponent/main拷贝到运行时的工作目录中
 COPY --from=builder /wxcloudrun-wxcomponent/main /wxcloudrun-wxcomponent/
 COPY --from=builder /wxcloudrun-wxcomponent/comm/config/server.conf /wxcloudrun-wxcomponent/comm/config/
+COPY --from=builder /wxcloudrun-wxcomponent/comm/config/c_server.conf /wxcloudrun-wxcomponent/comm/config/
 COPY --from=nodeBuilder /wxcloudrun-wxcomponent/client/dist /wxcloudrun-wxcomponent/client/dist
 
 # 设置时区
@@ -43,6 +44,13 @@ RUN apk add ca-certificates
 
 # 设置release模式
 ENV GIN_MODE release
+#ENV MYSQL_USERNAME xxx
+#ENV MYSQL_PASSWORD xxx
+#ENV MYSQL_ADDRESS xxx
+ENV POSTGRESQL_USERNAME xxx
+ENV POSTGRESQL_PASSWORD xxx
+ENV POSTGRESQL_ADDRESS xxx
+ENV WX_APPID wxb24a3e2dc775c401
 
 # 执行启动命令
 CMD ["/wxcloudrun-wxcomponent/main"]
