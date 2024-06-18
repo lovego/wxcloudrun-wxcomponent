@@ -19,8 +19,8 @@ func InitAdmin(username, password string) error {
 
 // Init 初始化管理员
 func Init() error {
-	username := config.DBConf.Admin
-	password := config.DBConf.Pass
+	username := config.OplatformConf.Username
+	password := config.OplatformConf.Password
 	log.Debugf("GetUser user[%s] pwd[%s]", username, password)
 	// conv password like website
 	md5Pwd := encrypt.GenerateMd5(password)

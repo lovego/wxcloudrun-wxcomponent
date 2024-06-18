@@ -6,9 +6,11 @@ import (
 )
 
 type Oplatform struct {
-	Appid  string
-	Token  string
-	AesKey string
+	Appid    string
+	Token    string
+	AesKey   string
+	Username string
+	Password string
 }
 
 type Whitelist struct {
@@ -24,8 +26,6 @@ type DB struct {
 	Password string
 	Address  string
 	Database string
-	Admin    string
-	Pass     string
 }
 
 var OplatformConf = &Oplatform{}
