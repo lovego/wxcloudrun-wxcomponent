@@ -6,9 +6,12 @@ build:
 
 
 linuxx86:
-	docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t lchjczw/open-wx:1.0  .
+	docker buildx build --platform linux/amd64 -t lchjczw/open-wx:latest  .
 
 
 
 push:
 	docker push lchjczw/open-wx:latest
+
+
+release:linuxx86 push

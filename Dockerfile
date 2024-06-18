@@ -19,7 +19,7 @@ COPY . /wxcloudrun-wxcomponent/
 RUN GOPROXY="https://goproxy.cn" GO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -x -v -o main .
 
 # 选用运行时所用基础镜像（GO语言选择原则：尽量体积小、包含基础linux内容的基础镜像）
-FROM alpine:3.13
+FROM alpine:3.20
 
 # 指定运行时的工作目录
 WORKDIR /wxcloudrun-wxcomponent
