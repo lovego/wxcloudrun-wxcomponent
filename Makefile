@@ -14,4 +14,4 @@ push:
 	docker push lchjczw/open-wx:latest
 
 
-release:linuxx86 push
+linux:linuxx86 push
